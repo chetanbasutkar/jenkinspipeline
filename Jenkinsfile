@@ -1,14 +1,16 @@
-pipeline{
+pipeline {
     agent any
-    parameters{
-        string(name:'tomcat_dev', defaultValue: '54.174.140.34', description: 'Staging Server')
-        string(name: 'tomecat-prod', defaultValue: '54.234.20.106', description: 'Production Server')
-    }
-    triggers{
-        pollSCM('* * * * *')
+
+    parameters {
+         string(name: 'tomcat_dev', defaultValue: '34.201.173.116', description: 'Staging Server')
+         string(name: 'tomcat_prod', defaultValue: '54.173.148.3', description: 'Production Server')
     }
 
-    stages{
+    triggers {
+         pollSCM('* * * * *')
+     }
+
+stages{
         stage('Build'){
             steps {
                 sh 'mvn clean package'
@@ -25,16 +27,16 @@ pipeline{
             parallel{
                 stage ('Deploy to Staging'){
                     steps {
-                        sh "scp -i //home/chetan/Desktop/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_dev}:/var/lib/tomcat7/webapps"
+                        sh "scp -i /home/chetan/Downloads/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_dev}:/var/lib/tomcat7/webapps"
                     }
                 }
 
                 stage ("Deploy to Production"){
                     steps {
-                        sh "scp -i /home/chetan/Desktop/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
+                        sh "scp -i /home/chetan/Downloads/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
                     }
                 }
             }
         }
-}
+    }
 }
